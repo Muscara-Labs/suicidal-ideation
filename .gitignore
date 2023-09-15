@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Data
+Dataset_Suicidal_Sentiment.csv
+*.DS_Store
+
 # C extensions
 *.so
 

@@ -1,8 +1,10 @@
 import tensorflow as tf
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 
 app = Flask(__name__)
+CORS(app)
 model = tf.keras.models.load_model('./suicide_classifier')
 
 HOST = os.getenv('HOST', '0.0.0.0')

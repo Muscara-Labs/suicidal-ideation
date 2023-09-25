@@ -1,1 +1,0 @@
-# bully-and-self-harm-model

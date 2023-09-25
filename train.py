@@ -26,20 +26,12 @@ sequence_length = 250
 
 vectorize_layer = layers.TextVectorization(max_tokens=max_features, output_mode='int', output_sequence_length=sequence_length)
 
-# Make a text-only dataset (without labels), then call adapt
 train_text = raw_train_ds.map(lambda x, y: x)
 vectorize_layer.adapt(train_text)
 
 def vectorize_text(text, label):
   text = tf.expand_dims(text, -1)
   return vectorize_layer(text), label
-
-# retrieve a batch (of 32 reviews and labels) from the dataset
-# text_batch, label_batch = next(iter(raw_train_ds))
-# first_review, first_label = text_batch[0], label_batch[0]
-# print("Review", first_review)
-# print("Label", raw_train_ds.class_names[first_label])
-# print("Vectorized review", vectorize_text(first_review, first_label))
 
 train_ds = raw_train_ds.map(vectorize_text)
 val_ds = raw_val_ds.map(vectorize_text)
@@ -64,7 +56,7 @@ model.summary()
 
 model.compile(loss=losses.BinaryCrossentropy(from_logits=True), optimizer='adam', metrics=tf.metrics.BinaryAccuracy(threshold=0.0))
 
-epochs = 25
+epochs = 10
 history = model.fit(train_ds, validation_data=val_ds, epochs=epochs)
 
 loss, accuracy = model.evaluate(test_ds)
@@ -82,27 +74,24 @@ val_loss = history_dict['val_loss']
 
 epochs = range(1, len(acc) + 1)
 
-# "bo" is for "blue dot"
-plt.plot(epochs, loss, 'go', label='Training loss')
-# b is for "solid blue line"
-plt.plot(epochs, val_loss, 'b', label='Validation loss')
-plt.title('Training and validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
+# plt.plot(epochs, loss, 'go', label='Training loss')
+# plt.plot(epochs, val_loss, 'b', label='Validation loss')
+# plt.title('Training and validation loss')
+# plt.xlabel('Epochs')
+# plt.ylabel('Loss')
+# plt.legend()
 
-plt.show()
+# plt.show()
 
-plt.plot(epochs, acc, 'go', label='Training acc')
-plt.plot(epochs, val_acc, 'b', label='Validation acc')
-plt.title('Training and validation accuracy')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend(loc='lower right')
+# plt.plot(epochs, acc, 'go', label='Training acc')
+# plt.plot(epochs, val_acc, 'b', label='Validation acc')
+# plt.title('Training and validation accuracy')
+# plt.xlabel('Epochs')
+# plt.ylabel('Accuracy')
+# plt.legend(loc='lower right')
 
-plt.show()
+# plt.show()
 
-# export the model
 export_model = tf.keras.Sequential([
   vectorize_layer,
   model,
@@ -114,13 +103,13 @@ export_model.compile(loss=losses.BinaryCrossentropy(from_logits=False), optimize
 loss, accuracy = export_model.evaluate(raw_test_ds)
 print(accuracy)
 
-print(export_model.predict(
-  [
-    "My sock is twisted.", 
-    "I'm so happy I passed my exam, I could die.",
-    "I hate life.",
-    "I can't take it anymore, I'm going to hang myself."
-  ]
-))
+# print(export_model.predict(
+#   [
+#     "My sock is twisted.", 
+#     "I'm so happy I passed my exam, I could die.",
+#     "I hate life.",
+#     "I can't take it anymore, I'm going to hang myself."
+#   ]
+# ))
 
 # export_model.save('suicide_classifier', save_format='tf')
